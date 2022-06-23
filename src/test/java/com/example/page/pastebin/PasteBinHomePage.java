@@ -1,11 +1,10 @@
 package com.example.page.pastebin;
 
-import com.example.entities.AbstractPage;
+import com.example.page.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -14,6 +13,8 @@ import java.time.Duration;
 public class PasteBinHomePage extends AbstractPage {
 
     private static final String HOMEPAGE_URL = "https://pastebin.com";
+    private static final String SYNTAX_HIGHLIGHTING_LOCATOR = "//ul[@id='select2-postform-format-results']//li[text()='%s']";
+    private static final String EXPIRATION_LOCATOR = "//ul[@id='select2-postform-expiration-results']//li[text()='%s']";
 
     @FindBy(xpath = "//textarea[@id='postform-text']")
     private WebElement pasteInput;
@@ -30,9 +31,10 @@ public class PasteBinHomePage extends AbstractPage {
     @FindBy(xpath = "//button[text()='Create New Paste']")
     private WebElement createNewPasteButton;
 
+    private final By pasteViewLocator = By.xpath("//div[@class='post-view js-post-view']");
+
     public PasteBinHomePage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(driver,this);
     }
 
     public PasteBinHomePage openPage() {
@@ -47,14 +49,14 @@ public class PasteBinHomePage extends AbstractPage {
 
     public PasteBinHomePage setSyntaxHighlighting(String option) {
         pasteSyntaxHighlightingDropDown.click();
-        driver.findElement(By.xpath(String.format("//ul[@id='select2-postform-format-results']//li[text()='%s']", option)))
+        driver.findElement(By.xpath(String.format(SYNTAX_HIGHLIGHTING_LOCATOR, option)))
                 .click();
         return this;
     }
 
     public PasteBinHomePage setExpiration(String option) {
         pasteExpirationDropDown.click();
-        driver.findElement(By.xpath(String.format("//ul[@id='select2-postform-expiration-results']//li[text()='%s']", option)))
+        driver.findElement(By.xpath(String.format(EXPIRATION_LOCATOR, option)))
                 .click();
         return this;
     }
@@ -67,7 +69,7 @@ public class PasteBinHomePage extends AbstractPage {
     public PastePage submitNewPaste() {
         createNewPasteButton.click();
         new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='post-view js-post-view']")));
+                .until(ExpectedConditions.presenceOfElementLocated(pasteViewLocator));
         return new PastePage(driver);
     }
 }

@@ -1,11 +1,10 @@
 package com.example.page.google_cloud;
 
-import com.example.entities.AbstractPage;
+import com.example.page.AbstractPage;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 public class GoogleCloudHomePage extends AbstractPage {
 
@@ -16,7 +15,6 @@ public class GoogleCloudHomePage extends AbstractPage {
 
     public GoogleCloudHomePage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(driver,this);
     }
 
     public GoogleCloudHomePage openPage() {

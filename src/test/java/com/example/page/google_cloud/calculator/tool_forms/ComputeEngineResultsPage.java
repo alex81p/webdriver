@@ -1,12 +1,12 @@
-package com.example.page.google_cloud.calculator.tools;
+package com.example.page.google_cloud.calculator.tool_forms;
 
-import com.example.entities.AbstractPage;
+import com.example.page.AbstractPage;
+import com.example.page.google_cloud.calculator.PricingCalculatorMainFrame;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
-public class ComputeEngineResults extends AbstractPage {
+public class ComputeEngineResultsPage extends AbstractPage {
 
     @FindBy(xpath = "//div[contains(text(), 'Provisioning model:')]")
     private WebElement provisioningModel;
@@ -35,55 +35,51 @@ public class ComputeEngineResults extends AbstractPage {
     @FindBy(xpath = "//button[normalize-space(text())='Send Email']")
     private WebElement sendEMailButton;
 
-    public ComputeEngineResults(WebDriver driver) {
+    public ComputeEngineResultsPage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(driver,this);
     }
 
     public String getProvisioningModel() {
-        return getValue(waitUntilElementIsVisible(provisioningModel).getText());
+        return provisioningModel.getText();
     }
 
     public String getInstanceType() {
-        return getValue(waitUntilElementIsVisible(instanceType).getText());
+        return instanceType.getText();
     }
 
     public String getRegion() {
-        return getValue(waitUntilElementIsVisible(region).getText());
+        return region.getText();
     }
 
     public String getLocalSSD() {
-        return getValue(waitUntilElementIsVisible(localSSD).getText());
+        return localSSD.getText();
     }
 
     public String getCommitmentTerm() {
-        return getValue(waitUntilElementIsVisible(commitmentTerm).getText());
+        return commitmentTerm.getText();
     }
 
     public String getTotalEstimatedCost() {
-        return getValue(waitUntilElementIsVisible(totalEstimatedCost).getText());
+        return totalEstimatedCost.getText();
     }
 
-    public ComputeEngineResults clickEMailEstimateButton() {
+    public ComputeEngineResultsPage clickEMailEstimateButton() {
         waitUntilElementIsClickable(eMailEstimateButton).click();
         return this;
     }
 
-    public ComputeEngineResults inputEMail(String eMail) {
+    public ComputeEngineResultsPage inputEMail(String eMail) {
         waitUntilElementIsVisible(eMailInput).sendKeys(eMail);
         return this;
     }
 
-    public ComputeEngineResults clickSendEMailButton() {
+    public ComputeEngineResultsPage clickSendEMailButton() {
         waitUntilElementIsClickable(sendEMailButton).click();
         return this;
     }
 
-    private String getValue(String string) {
-        return string
-                .lines()
-                .findFirst()
-                .get()
-                .substring(string.lastIndexOf(':') + 1).strip();
+    public ComputeEngineResultsPage switchToCalculatorFrame() {
+        PricingCalculatorMainFrame.switchToCalculatorFrame(driver);
+        return this;
     }
 }

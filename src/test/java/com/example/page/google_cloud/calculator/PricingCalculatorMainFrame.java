@@ -1,35 +1,33 @@
 package com.example.page.google_cloud.calculator;
 
-import com.example.entities.AbstractPage;
-import com.example.page.google_cloud.calculator.tools.ComputeEngineForm;
+import com.example.page.AbstractPage;
+import com.example.page.google_cloud.calculator.tool_forms.ComputeEngineFormPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 public class PricingCalculatorMainFrame extends AbstractPage {
 
-    @FindBy(xpath = "//article[@id='cloud-site']//iframe")
-    private WebElement calculatorFrame;
+    private static final String TOOL_LOCATOR = "//md-pagination-wrapper//div[text()='%s']";
+    private static final String FRAME_LOCATOR = "//article[@id='cloud-site']//iframe";
+    private static final String SUB_FRAME_NAME = "myFrame";
 
     public PricingCalculatorMainFrame(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(driver,this);
     }
 
-    public ComputeEngineForm selectComputeEngine() {
+    public ComputeEngineFormPage selectComputeEngine() {
+        switchToCalculatorFrame(driver);
         selectTool("Compute Engine");
-        return new ComputeEngineForm(driver);
+        return new ComputeEngineFormPage(driver);
 
     }
     private void selectTool(String tool) {
-        switchToCalculatorFrame();
-        waitUntilElementIsVisible(By.xpath(String.format("//md-pagination-wrapper//div[text()='%s']", tool))).click();
+        waitUntilElementIsVisible(By.xpath(String.format(TOOL_LOCATOR, tool))).click();
     }
 
-    public void switchToCalculatorFrame(){
-        driver.switchTo().frame(calculatorFrame);
-        driver.switchTo().frame("myFrame");
+    public static void switchToCalculatorFrame(WebDriver driver) {
+        driver.switchTo().defaultContent();
+        driver.switchTo().frame(driver.findElement(By.xpath(FRAME_LOCATOR)));
+        driver.switchTo().frame(SUB_FRAME_NAME);
     }
 }

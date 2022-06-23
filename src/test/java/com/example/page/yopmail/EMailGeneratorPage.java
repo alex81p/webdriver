@@ -1,10 +1,9 @@
 package com.example.page.yopmail;
 
-import com.example.entities.AbstractPage;
+import com.example.page.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 public class EMailGeneratorPage extends AbstractPage {
 
@@ -16,7 +15,6 @@ public class EMailGeneratorPage extends AbstractPage {
 
     public EMailGeneratorPage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(driver,this);
     }
 
     public EMailGeneratorPage clickCopyToClipboardButton() {

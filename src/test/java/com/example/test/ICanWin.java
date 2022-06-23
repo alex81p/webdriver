@@ -1,6 +1,5 @@
 package com.example.test;
 
-import com.example.entities.AbstractTest;
 import com.example.page.pastebin.PasteBinHomePage;
 import org.testng.annotations.Test;
 

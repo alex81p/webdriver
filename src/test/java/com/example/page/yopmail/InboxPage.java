@@ -1,33 +1,44 @@
 package com.example.page.yopmail;
 
-import com.example.entities.AbstractPage;
+import com.example.page.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
 public class InboxPage extends AbstractPage {
 
-    private static final By ESTIMATED_MONTHLY_COST_LOCATOR = By.xpath("//*[contains(text(),'Estimated Monthly Cost:')]");
+    private final String inboxFrameName = "ifinbox";
+    private final String mailFrameName = "ifmail";
+    private final By estimatedMonthlyCostLetterLocator = By.xpath("//div[text()='Google Cloud Price Estimate']/ancestor::button");
+
+    @FindBy(xpath = "//h2[contains(text(),'Estimated Monthly Cost:')]")
+    private WebElement estimatedMonthlyCost;
 
     public InboxPage(WebDriver driver) {
         super(driver);
-        PageFactory.initElements(driver,this);
+    }
+
+    public InboxPage openEstimatedMonthlyCostLetter() {
+        driver.switchTo().defaultContent();
+        new WebDriverWait(driver, Duration.ofSeconds(20),Duration.ofSeconds(3))
+                .until(driver -> {
+                    driver.switchTo().frame(inboxFrameName);
+                    if (elementExists(estimatedMonthlyCostLetterLocator)) {
+                        return driver.findElement(estimatedMonthlyCostLetterLocator);
+                    }
+                    driver.navigate().refresh();
+                    return null;
+                }).click();
+        return this;
     }
 
     public String getEstimatedMonthlyCost() {
-        return new WebDriverWait(driver, Duration.ofSeconds(20),Duration.ofSeconds(3))
-                .until(driver -> {
-                    driver.switchTo().frame("ifmail");
-                    if (elementExists(ESTIMATED_MONTHLY_COST_LOCATOR)) {
-                        return driver.findElement(ESTIMATED_MONTHLY_COST_LOCATOR);
-                    } else {
-                        driver.switchTo().defaultContent();
-                        driver.navigate().refresh();
-                        return null;
-                    }
-                }).getText();
+        driver.switchTo().defaultContent();
+        driver.switchTo().frame(mailFrameName);
+        return estimatedMonthlyCost.getText();
     }
 }

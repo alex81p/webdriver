@@ -1,10 +1,8 @@
 package com.example.test;
 
-import com.example.entities.AbstractTest;
 import com.example.page.pastebin.PasteBinHomePage;
 import com.example.page.pastebin.PastePage;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /*
@@ -25,38 +23,37 @@ import org.testng.annotations.Test;
 
 public class BringItOn extends AbstractTest {
 
-    private PastePage pastePage;
     private static final String PASTE_TEXT = "git config --global user.name  \"New Sheriff in Town\"\n" +
             "git reset $(git commit-tree HEAD^{tree} -m \"Legacy code\")\n" +
             "git push origin master --force";
     private static final String PASTE_SYNTAX_HIGHLIGHTING = "Bash";
+    private static final String EXPECTED_SYNTAX_HIGHLIGHTING = "bash";
     private static final String PASTE_EXPIRATION_TIME = "10 Minutes";
     private static final String PASTE_TITLE = "how to gain dominance among developers";
 
+    @Test
+    public void verifyPasteTitle() {
+        createNewPaste();
+        Assert.assertEquals(driver.getTitle(), String.format("%s - Pastebin.com", PASTE_TITLE));
+    }
 
-    @BeforeClass
-    public void createNewPaste() {
-        pastePage = new PasteBinHomePage(driver)
+    @Test
+    public void verifyPasteSyntaxHighlighting() {
+        Assert.assertEquals(createNewPaste().getPasteSyntaxHighlighting(), EXPECTED_SYNTAX_HIGHLIGHTING);
+    }
+
+    @Test
+    public void verifyPasteText() {
+        Assert.assertEquals(createNewPaste().getPasteText(), PASTE_TEXT);
+    }
+
+    private PastePage createNewPaste() {
+        return new PasteBinHomePage(driver)
                 .openPage()
                 .inputPaste(PASTE_TEXT)
                 .setSyntaxHighlighting(PASTE_SYNTAX_HIGHLIGHTING)
                 .setExpiration(PASTE_EXPIRATION_TIME)
                 .setTitle(PASTE_TITLE)
                 .submitNewPaste();
-    }
-
-    @Test
-    public void verifyPasteTitle(){
-        Assert.assertEquals(driver.getTitle(), String.format("%s - Pastebin.com", PASTE_TITLE));
-    }
-
-    @Test
-    public void verifyPasteSyntaxHighlighting(){
-        Assert.assertEquals(pastePage.getPasteSyntaxHighlighting(), "bash");
-    }
-
-    @Test
-    public void verifyPasteText(){
-        Assert.assertEquals(pastePage.getPasteText(), PASTE_TEXT);
     }
 }

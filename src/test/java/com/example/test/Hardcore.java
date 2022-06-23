@@ -1,10 +1,10 @@
 package com.example.test;
 
-import com.example.entities.AbstractTest;
-import com.example.page.google_cloud.calculator.PricingCalculatorMainFrame;
-import com.example.page.google_cloud.calculator.tools.ComputeEngineResults;
+import com.example.model.google_cloud.ComputeEngineForm;
 import com.example.page.yopmail.EMailGeneratorPage;
 import com.example.page.yopmail.YOPMailHomePage;
+import com.example.test.data_providers.StaticDataProvider;
+import com.example.steps.GoogleCloudSteps;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,28 +37,24 @@ import org.testng.annotations.Test;
 
 public class Hardcore extends AbstractTest {
 
-    private static final String EXPECTED_ESTIMATED_MONTHLY_COST = "Estimated Monthly Cost: USD 1,081.20";
-
-    @Test
-    public void verifyTotalEstimatedCost() {
-        ComputeEngineResults computeEngineResults = new HurtMePlenty().createComputeEngineCalculation();
+    @Test(dataProvider = "HardcoreTestData", dataProviderClass = StaticDataProvider.class)
+    public void verifyTotalEstimatedCost(String searchRequest, String linkText, ComputeEngineForm computeEngineForm, String expectedResult) {
+        GoogleCloudSteps googleCloudSteps = new GoogleCloudSteps(driver);
+        googleCloudSteps.createComputeEngineCalculation(searchRequest, linkText, computeEngineForm);
         String calculatorTab = getCurrentTabHandle();
         openNewTab();
-        EMailGeneratorPage eMailGeneratorPage = new YOPMailHomePage(driver)
+        new YOPMailHomePage(driver)
                 .openPage()
                 .clickEMailGeneratorLink()
                 .clickCopyToClipboardButton();
         String yopMailTab = getCurrentTabHandle();
         switchToTab(calculatorTab);
-        new PricingCalculatorMainFrame(driver).switchToCalculatorFrame();
-        computeEngineResults
-                .clickEMailEstimateButton()
-                .inputEMail(PASTE_FROM_CLIPBOARD)
-                .clickSendEMailButton();
+        googleCloudSteps.sendComputeEngineResultsToEMail(PASTE_FROM_CLIPBOARD);
         switchToTab(yopMailTab);
-        String actualEstimatedMonthlyCost = eMailGeneratorPage
+        String actualResult = new EMailGeneratorPage(driver)
                 .clickCheckInboxButton()
+                .openEstimatedMonthlyCostLetter()
                 .getEstimatedMonthlyCost();
-        Assert.assertEquals(actualEstimatedMonthlyCost, EXPECTED_ESTIMATED_MONTHLY_COST);
+        Assert.assertEquals(actualResult, expectedResult);
     }
 }

@@ -1,10 +1,11 @@
 package com.example.test;
 
-import com.example.entities.AbstractTest;
-import com.example.page.google_cloud.GoogleCloudHomePage;
-import com.example.page.google_cloud.calculator.tools.ComputeEngineResults;
+import com.example.model.google_cloud.ComputeEngineForm;
+import com.example.model.google_cloud.ComputeEngineResults;
+import com.example.test.data_providers.StaticDataProvider;
+import com.example.steps.GoogleCloudSteps;
+import com.example.util.StringUtils;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
     /*
@@ -32,71 +33,63 @@ import org.testng.annotations.Test;
 
 public class HurtMePlenty extends AbstractTest {
 
-    private ComputeEngineResults results;
-
-    private static final String SEARCH_REQUEST = "Google Cloud Platform Pricing Calculator";
-    private static final String NUMBER_OF_INSTANCES = "4";
-    private static final String OPERATING_SYSTEM_LONG = "Free: Debian, CentOS, CoreOS, Ubuntu or BYOL (Bring Your Own License)";
-    private static final String PROVISIONING_MODEL = "Regular";
-    private static final String SERIES = "N1";
-    private static final String INSTANCE_TYPE_LONG = "n1-standard-8 (vCPUs: 8, RAM: 30GB)";
-    private static final String INSTANCE_TYPE_SHORT = "n1-standard-8";
-    private static final String GPU_TYPE = "NVIDIA Tesla V100";
-    private static final String GPU_COUNT = "1";
-    private static final String LOCAL_SSD = "2x375 GB";
-    private static final String REGION_LONG = "Frankfurt (europe-west3)";
-    private static final String REGION_SHORT = "Frankfurt";
-    private static final String COMMITMENT_TERM = "1 Year";
-    private static final String TOTAL_ESTIMATED_COST = "USD 1,081.20 per 1 month";
-
-    @BeforeClass()
-    public ComputeEngineResults createComputeEngineCalculation(){
-        results = new GoogleCloudHomePage(driver)
-                .openPage()
-                .search(SEARCH_REQUEST)
-                .openPricingCalculatorPage(SEARCH_REQUEST)
-                .selectComputeEngine()
-                .setNumberOfInstances(NUMBER_OF_INSTANCES)
-                .setOperatingSystem(OPERATING_SYSTEM_LONG)
-                .setProvisioningModel(PROVISIONING_MODEL)
-                .setSeries(SERIES)
-                .setMachineType(INSTANCE_TYPE_LONG)
-                .addGPUs(GPU_TYPE, GPU_COUNT)
-                .setLocalSSD(LOCAL_SSD)
-                .setLocation(REGION_LONG)
-                .setCommittedUsage(COMMITMENT_TERM)
-                .clickAddInstancesToEstimateButton()
-                .switchToComputeEngineResults();
-        return results;
+    @Test(dataProvider = "HurtMePlentyTestData", dataProviderClass = StaticDataProvider.class)
+    public void verifyVMClass(String searchRequest, String linkText,
+                              ComputeEngineForm computeEngineForm, ComputeEngineResults expectedResults) {
+        GoogleCloudSteps steps = new GoogleCloudSteps(driver);
+        String actualResult = StringUtils.getValueAfterColon(steps
+                .createComputeEngineCalculation(searchRequest, linkText, computeEngineForm)
+                .getProvisioningModel());
+        Assert.assertEquals(actualResult, expectedResults.getProvisioningModel());
     }
 
-    @Test
-    public void verifyVMClass() {
-        Assert.assertEquals(results.getProvisioningModel(), PROVISIONING_MODEL);
+    @Test(dataProvider = "HurtMePlentyTestData", dataProviderClass = StaticDataProvider.class)
+    public void verifyInstanceType(String searchRequest, String linkText,
+                                   ComputeEngineForm computeEngineForm, ComputeEngineResults expectedResults) {
+        GoogleCloudSteps steps = new GoogleCloudSteps(driver);
+        String actualResult = StringUtils.getValueAfterColon(steps
+                .createComputeEngineCalculation(searchRequest, linkText, computeEngineForm)
+                .getInstanceType());
+        Assert.assertEquals(actualResult, expectedResults.getInstanceType());
     }
 
-    @Test
-    public void verifyInstanceType() {
-        Assert.assertEquals(results.getInstanceType(), INSTANCE_TYPE_SHORT);
+    @Test(dataProvider = "HurtMePlentyTestData", dataProviderClass = StaticDataProvider.class)
+    public void verifyRegion(String searchRequest, String linkText,
+                             ComputeEngineForm computeEngineForm, ComputeEngineResults expectedResults) {
+        GoogleCloudSteps steps = new GoogleCloudSteps(driver);
+        String actualResult = StringUtils.getValueAfterColon(steps
+                .createComputeEngineCalculation(searchRequest, linkText, computeEngineForm)
+                .getRegion());
+        Assert.assertEquals(actualResult, expectedResults.getRegion());
     }
 
-    @Test
-    public void verifyRegion() {
-        Assert.assertEquals(results.getRegion(), REGION_SHORT);
+    @Test(dataProvider = "HurtMePlentyTestData", dataProviderClass = StaticDataProvider.class)
+    public void verifyLocalSSD(String searchRequest, String linkText,
+                               ComputeEngineForm computeEngineForm, ComputeEngineResults expectedResults) {
+        GoogleCloudSteps steps = new GoogleCloudSteps(driver);
+        String actualResult = StringUtils.getValueAfterColon(steps
+                .createComputeEngineCalculation(searchRequest, linkText, computeEngineForm)
+                .getLocalSSD());
+        Assert.assertEquals(actualResult, expectedResults.getLocalSSD());
     }
 
-    @Test
-    public void verifyLocalSSD() {
-        Assert.assertEquals(results.getLocalSSD(), LOCAL_SSD);
+    @Test(dataProvider = "HurtMePlentyTestData", dataProviderClass = StaticDataProvider.class)
+    public void verifyCommitmentTerm(String searchRequest, String linkText,
+                                     ComputeEngineForm computeEngineForm, ComputeEngineResults expectedResults) {
+        GoogleCloudSteps steps = new GoogleCloudSteps(driver);
+        String actualResult = StringUtils.getValueAfterColon(steps
+                .createComputeEngineCalculation(searchRequest, linkText, computeEngineForm)
+                .getCommitmentTerm());
+        Assert.assertEquals(actualResult, expectedResults.getCommitmentTerm());
     }
 
-    @Test
-    public void verifyCommitmentTerm() {
-        Assert.assertEquals(results.getCommitmentTerm(), COMMITMENT_TERM);
-    }
-
-    @Test
-    public void verifyTotalEstimatedCost() {
-        Assert.assertEquals(results.getTotalEstimatedCost(), TOTAL_ESTIMATED_COST);
+    @Test(dataProvider = "HurtMePlentyTestData", dataProviderClass = StaticDataProvider.class)
+    public void verifyTotalEstimatedCost(String searchRequest, String linkText,
+                                         ComputeEngineForm computeEngineForm, ComputeEngineResults expectedResults) {
+        GoogleCloudSteps steps = new GoogleCloudSteps(driver);
+        String actualResult = StringUtils.getValueAfterColon(steps
+                .createComputeEngineCalculation(searchRequest, linkText, computeEngineForm)
+                .getTotalEstimatedCost());
+        Assert.assertEquals(actualResult, expectedResults.getTotalEstimatedCost());
     }
 }
